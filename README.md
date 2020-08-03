@@ -1,0 +1,1 @@
+# winnetou_slidescreen
