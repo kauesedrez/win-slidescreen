@@ -32,6 +32,9 @@ Winnetou.create(ss.code, "#app");
 // criação das telas 
 let tela1 = Constructos.screen();
 let tela2 = Constructos.screen();
+Winnetou.create(tela1.code + tela2.code, ss.ids.slideScreen);
+
+// Inicialização slideScreen
 slideScreen(ss.ids.slideScreen, "#app");
 
 // criação de conteúdo das telas
