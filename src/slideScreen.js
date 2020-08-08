@@ -1,4 +1,4 @@
-import { Winnetou as W, Constructos as C } from "../winnetou.js";
+import { Winnetou as W } from "../../winnetou-base/src/_winnetouBase.js";
 
 /**@type {any} */
 var GLOBAL_TELAS = [];
