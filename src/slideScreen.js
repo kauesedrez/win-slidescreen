@@ -1,4 +1,4 @@
-import { W } from "../../winnetoujs/src/_winnetouBase.js";
+import { W } from "../../winnetoujs/src/winnetou.js";
 
 /**@type {any} */
 var GLOBAL_TELAS = [];
