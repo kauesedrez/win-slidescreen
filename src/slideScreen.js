@@ -10,7 +10,7 @@ var GLOBAL_SS_OUT = "";
  * @param  {string} slideScreen_Constructo
  * @param  {string} document_container_element
  */
-export function slideScreen(
+export function make(
   slideScreen_Constructo,
   document_container_element
 ) {
@@ -44,7 +44,7 @@ export function slideScreen(
  * @param  {any} to_screen screen id
  * @param  {string} efeito (null|animate|direct) **default "animate"**
  */
-export function screenScroll(to_screen, efeito = "animate") {
+export function scroll(to_screen, efeito = "animate") {
   const windowSize = GLOBAL_SS_OUT;
 
   if (typeof to_screen == "string") {
