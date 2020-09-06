@@ -1,120 +1,50 @@
-# win-slidescreen
-
-Winnetou SlideScreen é um plugin WinnetouJs feito para adicionar o efeito de transição de tela em um aplicativo.
-
-Por ser um plugin winnetou, sua utilização é muito facilitada.
-
-## Instalação
-
-Na pasta raiz do seu projeto (onde se encontra o wbr)
-
-```
-npm i win-slidescreen
-```
-
-O caminho relativo será
-
-```
-./node_modules/win-slidescreen/src/
-```
-
-## Imports
-
-O slidescreen possui 3 arquivos: slideScreen.html (que contém os constructos necessários), slideScreen.js (plugin a ser importado para o nosso entry point) e slideScreen.scss (estilos a ser importado para o nosso entry point sass).
-
-### slideScreen.html
-
-Os constructos dos plugins winnetou são automaticamente compilados pelo wbr. Não é necessário nenhum tipo de configuração. Basta rodar
-
-```
-node wbr
-```
-
-e os constructos do slidescreen já estarão disponíveis para uso.
-
-### slideScreen.js
-
-Para usar, faça o import dos métodos screenScroll e slideScreen:
-
 ```javascript
 import {
-  screenScroll,
-  slideScreen,
+  make,
+  scroll,
 } from "../node_modules/win-slidescreen/src/slideScreen.js";
-```
+import { screen, slideScreen } from "./constructos/slideScreen.js";
+import { content, bt } from "./constructos/welcome.js";
+// import { W } from "../node_modules/winnetoujs/src/winnetou.js";
 
-### slideScreen.scss
+// global vars
+var mainPage, profilePage;
 
-No seu entry point sass, faça o import da seguinte maneira:
+const render = () => {
+  // create slideScreen container
+  const container = slideScreen().create("#app");
 
-```css
-@import "../node_modules/win-slidescreen/src/slideScreen.scss";
-```
+  // create the screens inside de main container
+  mainPage = screen().create(container.ids.slideScreen);
+  profilePage = screen().create(container.ids.slideScreen);
 
-Após, compile o projeto com node wbr.
+  // initialize the slideScreen business logic
+  make(container.ids.slideScreen, "#app");
 
-## Utilização
+  // add some content to the pages
+  content({ text: "Main Page" }).create(mainPage.ids.screen);
+  bt({ text: "Go to profile", action: "toPage2()" }).create(
+    mainPage.ids.screen
+  );
+  content({ text: "Profile Page" }).create(profilePage.ids.screen);
+  bt({ text: "Back Home", action: "toPage1()" }).create(
+    profilePage.ids.screen
+  );
 
-O slideScreen é composto por um constructo pai chamado "slideScreen" e por constructos filhos chamados "screen". Dentro do constructo pai se pode colocar quantas screens se quiser. Após isso deve-se chamar a função inicializadora slideScreen() e para se alterar entre telas a função screenScroll().
+  // turn global access
+  // @ts-ignore
+  window.toPage2 = toPage2;
+  // @ts-ignore
+  window.toPage1 = toPage1;
+};
 
-Use junto com o Winnetou.navigate() ou pass() para obter o voltar com botão físico.
+render();
 
-## Exemplo de uso
+function toPage2() {
+  scroll(profilePage.ids.screen);
+}
 
-main.js
-
-```javascript
-// supondo que seu código esteja na pasta ./js
-// importação do winnetou
-import { Winnetou, Constructos, Strings } from "../winnetou.js";
-
-// importação do slidescreen
-import {
-  screenScroll,
-  slideScreen,
-} from "../node_modules/win-slidescreen/src/slideScreen.js";
-
-// importante para testar antes de compilar com o wbr
-//@ts-ignore
-window.Winnetou = Winnetou;
-
-/**
- * Cria o container do slidescreen e
- * adiciona ao app
- */
-let ss = Constructos.slideScreen();
-Winnetou.create(ss.code, "#app");
-
-// Cria as telas
-let tela1 = Constructos.screen();
-let tela2 = Constructos.screen();
-Winnetou.create(tela1.code + tela2.code, ss.ids.slideScreen);
-
-// Inicialização slideScreen
-slideScreen(ss.ids.slideScreen, "#app");
-
-// criação de conteúdo das telas
-let bt = Constructos.btSimples({
-  text: "Sou a tela 1",
-  action: `Winnetou.navigate('/pagina2')`,
-});
-Winnetou.create(bt.code, tela1.ids.screen);
-let bt2 = Constructos.btSimples({
-  text: "Sou a tela 2",
-  action: `Winnetou.navigate('/')`,
-});
-Winnetou.create(bt2.code, tela2.ids.screen);
-
-// estilização opcional para ver o efeito melhor
-Winnetou.select(tela1.ids.screen).css("backgroundColor", "red");
-
-// Winnetou Routes
-Winnetou.createRoutes({
-  "/": () => {
-    screenScroll(tela1.ids.screen);
-  },
-  "/pagina2": () => {
-    screenScroll(tela2.ids.screen);
-  },
-});
+function toPage1() {
+  scroll(mainPage.ids.screen);
+}
 ```
