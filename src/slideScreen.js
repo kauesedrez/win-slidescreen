@@ -1,132 +1,165 @@
-import { Winnetou as W } from "../../winnetoujs/src/winnetou.js";
+import {
+  Winnetou as W,
+  Winnetou,
+} from "../../winnetoujs/src/winnetou.js";
 
-/**@type {any} */
-var GLOBAL_TELAS = [];
-/**@type {any} */
-var GLOBAL_SS_OUT = "";
+class slideScreen_ {
+  constructor(device = "pc") {
+    /**@type {string} */
+    this.DEVICE = device;
+    /**@type {array} */
+    this.GLOBAL_SCREENS = [];
+    /**@type {number} */
+    this.ACTIVE_SCREEN = 0;
+    /**@type {array} */
+    this.SCROLLS = [];
+    /**@type {number} */
+    this.GLOBAL_SS_OUT;
+    /**@type {string} */
+    this.CONTAINER;
+    /**@type {string} */
+    this.SS_CONSTRUCTO;
+    /**@types {object} */
+    this.easings = {
+      easeOutCubic: function (x, t, b, c, d) {
+        return c * ((t = t / d - 1) * t * t + 1) + b;
+      },
+    };
 
-/**
- * Method that adds the business rule in the slideScreen constructo to receive the screens correctly.
- * @param  {string} slideScreen_Constructo
- * @param  {string} document_container_element
- */
-export function make(
-  slideScreen_Constructo,
-  document_container_element
-) {
-  //
-  GLOBAL_SS_OUT = W.select(document_container_element).getWidth();
+    this.addFunctions();
+  }
 
-  // console.log("\n\n\nwidth #app: ", GLOBAL_SS_OUT, container);
-
-  const totalDeTelas = document.getElementById(slideScreen_Constructo)
-    .childElementCount;
-
-  const larguraSlideScreen = totalDeTelas * GLOBAL_SS_OUT;
-
-  W.select(".screen").css("width", GLOBAL_SS_OUT);
-  W.select("#" + slideScreen_Constructo).css(
-    "width",
-    larguraSlideScreen
-  );
-
-  for (let i = 0; i < totalDeTelas; i++) {
+  make(slideScreen_Constructo, document_container_element) {
     //
-    GLOBAL_TELAS[
-      document.getElementById(slideScreen_Constructo).children[i].id
-    ] = i;
-    //
-  }
-}
-/**
- * Method responsible for changing the screens.
- * Use with Winnetou.navigate() to get the option to return with the physical back button
- * @param  {any} to_screen screen id
- * @param  {string} efeito (null|animate|direct) **default "animate"**
- */
-export function scroll(to_screen, efeito = "animate") {
-  const windowSize = GLOBAL_SS_OUT;
 
-  if (typeof to_screen == "string") {
-    to_screen = GLOBAL_TELAS[to_screen];
-  }
+    this.CONTAINER = document_container_element;
+    this.SS_CONSTRUCTO = slideScreen_Constructo;
 
-  if (efeito === "animate") {
-    tween(
-      sel("app").scrollLeft,
-      to_screen * windowSize,
-      500,
-      easings["easeOutCubic"]
-    );
-  }
+    // css transformations
+    Winnetou.select(this.CONTAINER).css("overflowX", "hidden");
+    Winnetou.select(slideScreen_Constructo).css("display", "flex");
 
-  if (efeito == "direct") {
-    sel("app").scrollLeft = to_screen * windowSize;
-  }
-}
-
-var sel = function (id) {
-  return document.getElementById(id);
-};
-
-var w = sel("app");
-
-var tween = function (start, end, duration, easing) {
-  var delta = end - start;
-  var startTime;
-  if (window.performance && window.performance.now) {
-    startTime = performance.now();
-  } else if (Date.now) {
-    startTime = Date.now();
-  } else {
-    startTime = new Date().getTime();
-  }
-  var tweenLoop = function (time) {
-    var t = !time ? 0 : time - startTime;
-    var factor = easing(null, t, 0, 1, duration);
-    try {
-      w.scrollLeft = start + delta * factor;
-    } catch (e) {
-      console.log("err" + e);
+    if (this.DEVICE === "mobile") {
+      Winnetou.select(".screen")
+        .css("overflowY", "scroll")
+        .css("height", "100vh");
     }
-    if (t < duration && w.scrollLeft != end)
-      requestAnimationFrame(tweenLoop);
-  };
-  tweenLoop();
-};
 
-(function () {
-  var lastTime = 0;
-  var vendors = ["ms", "moz", "webkit", "o"];
-  for (
-    var x = 0;
-    x < vendors.length && !window.requestAnimationFrame;
-    ++x
-  ) {
-    window.requestAnimationFrame =
-      window[vendors[x] + "RequestAnimationFrame"];
-    window.cancelAnimationFrame =
-      window[vendors[x] + "CancelAnimationFrame"] ||
-      window[vendors[x] + "CancelRequestAnimationFrame"];
+    this.GLOBAL_SS_OUT = W.select(
+      document_container_element
+    ).getWidth();
+
+    const screensTotal = document.getElementById(
+      slideScreen_Constructo
+    ).childElementCount;
+
+    const SSWidth = screensTotal * this.GLOBAL_SS_OUT;
+
+    W.select(".screen").css("width", this.GLOBAL_SS_OUT);
+    W.select("#" + slideScreen_Constructo).css("width", SSWidth);
+
+    for (let i = 0; i < screensTotal; i++) {
+      //
+      this.GLOBAL_SCREENS[
+        document.getElementById(slideScreen_Constructo).children[i].id
+      ] = i;
+      //
+    }
   }
-  if (!window.requestAnimationFrame)
-    window.requestAnimationFrame = function (callback, element) {
-      var currTime = new Date().getTime();
-      var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-      var id = window.setTimeout(function () {
-        callback(currTime + timeToCall);
-      }, timeToCall);
-      lastTime = currTime + timeToCall;
-      return id;
-    };
-  if (!window.cancelAnimationFrame)
-    window.cancelAnimationFrame = function (id) {
-      clearTimeout(id);
-    };
-})();
 
-var easings = {
-  easeOutCubic: function (x, t, b, c, d) {
-    return c * ((t = t / d - 1) * t * t + 1) + b;
-  },
-};
+  scroll(to_screen, efeito = "animate") {
+    const windowSize = this.GLOBAL_SS_OUT;
+
+    if (typeof to_screen == "string") {
+      to_screen = this.GLOBAL_SCREENS[to_screen];
+    }
+
+    // do scroll stuff if PC
+    if (this.DEVICE === "pc") {
+      // how to store the scroll of active screen?
+
+      this.SCROLLS[this.ACTIVE_SCREEN] = window.scrollY;
+    }
+
+    if (efeito === "animate") {
+      this.tween(
+        this.sel(this.CONTAINER).scrollLeft,
+        to_screen * windowSize,
+        500,
+        this.easings["easeOutCubic"]
+      );
+    }
+
+    if (efeito == "direct") {
+      this.sel(this.CONTAINER).scrollLeft = to_screen * windowSize;
+    }
+
+    // aplies the scroll if in pc
+    if (this.DEVICE === "pc") {
+      window.scroll(0, this.SCROLLS[to_screen] || 0);
+
+      // define new active screen
+      this.ACTIVE_SCREEN = to_screen;
+    }
+  }
+
+  addFunctions() {
+    var lastTime = 0;
+    var vendors = ["ms", "moz", "webkit", "o"];
+    for (
+      var x = 0;
+      x < vendors.length && !window.requestAnimationFrame;
+      ++x
+    ) {
+      window.requestAnimationFrame =
+        window[vendors[x] + "RequestAnimationFrame"];
+      window.cancelAnimationFrame =
+        window[vendors[x] + "CancelAnimationFrame"] ||
+        window[vendors[x] + "CancelRequestAnimationFrame"];
+    }
+    if (!window.requestAnimationFrame)
+      window.requestAnimationFrame = function (callback, element) {
+        var currTime = new Date().getTime();
+        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        var id = window.setTimeout(function () {
+          callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+      };
+    if (!window.cancelAnimationFrame)
+      window.cancelAnimationFrame = function (id) {
+        clearTimeout(id);
+      };
+  }
+
+  sel = function (id) {
+    return document.getElementById(id);
+  };
+
+  tween = function (start, end, duration, easing) {
+    var delta = end - start;
+    var el = this.sel(this.CONTAINER);
+    var startTime;
+    if (window.performance && window.performance.now) {
+      startTime = performance.now();
+    } else if (Date.now) {
+      startTime = Date.now();
+    } else {
+      startTime = new Date().getTime();
+    }
+    var tweenLoop = time => {
+      var t = !time ? 0 : time - startTime;
+      var factor = easing(null, t, 0, 1, duration);
+      try {
+        el.scrollLeft = start + delta * factor;
+      } catch (e) {}
+      if (t < duration && el.scrollLeft != end)
+        requestAnimationFrame(tweenLoop);
+    };
+    tweenLoop();
+  };
+}
+
+export const SlideScreen = new slideScreen_();
+export const SlideScreenMobile = new slideScreen_("mobile");
