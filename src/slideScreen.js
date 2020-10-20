@@ -93,14 +93,11 @@ class slideScreen_ {
     if (efeito == "direct") {
       this.sel(this.CONTAINER).scrollLeft =
         to_screen_global * windowSize;
-      W.select(
-        `#${
-          Object.keys(this.GLOBAL_SCREENS)[this.ACTIVE_SCREEN]
-        } .screenContent`
-      ).hide();
-    }
 
-    W.select(`#${to_screen} .screenContent`).show();
+      W.select(`.screenContent`).hide();
+
+      W.select(`#${to_screen} .screenContent`).show();
+    }
 
     // aplies the scroll if in pc
     if (this.DEVICE === "pc") {
