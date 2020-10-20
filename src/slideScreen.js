@@ -1,7 +1,4 @@
-import {
-  Winnetou as W,
-  Winnetou,
-} from "../../winnetoujs/src/winnetou.js";
+import { Winnetou as W } from "../../winnetoujs/src/winnetou.js";
 
 class slideScreen_ {
   constructor(device = "pc") {
@@ -36,11 +33,11 @@ class slideScreen_ {
     this.SS_CONSTRUCTO = slideScreen_Constructo;
 
     // css transformations
-    Winnetou.select(this.CONTAINER).css("overflowX", "hidden");
-    Winnetou.select(slideScreen_Constructo).css("display", "flex");
+    W.select(this.CONTAINER).css("overflowX", "hidden");
+    W.select(slideScreen_Constructo).css("display", "flex");
 
     if (this.DEVICE === "mobile") {
-      Winnetou.select(".screen")
+      W.select(".screen")
         .css("overflowY", "scroll")
         .css("height", "100vh");
     }
@@ -69,9 +66,12 @@ class slideScreen_ {
 
   scroll(to_screen, efeito = "animate") {
     const windowSize = this.GLOBAL_SS_OUT;
+    let to_screen_global;
 
     if (typeof to_screen == "string") {
-      to_screen = this.GLOBAL_SCREENS[to_screen];
+      to_screen_global = this.GLOBAL_SCREENS[to_screen];
+    } else {
+      to_screen_global = to_screen;
     }
 
     // do scroll stuff if PC
@@ -84,22 +84,30 @@ class slideScreen_ {
     if (efeito === "animate") {
       this.tween(
         this.sel(this.CONTAINER).scrollLeft,
-        to_screen * windowSize,
+        to_screen_global * windowSize,
         500,
         this.easings["easeOutCubic"]
       );
     }
 
     if (efeito == "direct") {
-      this.sel(this.CONTAINER).scrollLeft = to_screen * windowSize;
+      this.sel(this.CONTAINER).scrollLeft =
+        to_screen_global * windowSize;
+      W.select(
+        `#${
+          Object.keys(this.GLOBAL_SCREENS)[this.ACTIVE_SCREEN]
+        } .screenContent`
+      ).hide();
     }
+
+    W.select(`#${to_screen} .screenContent`).show();
 
     // aplies the scroll if in pc
     if (this.DEVICE === "pc") {
-      window.scroll(0, this.SCROLLS[to_screen] || 0);
+      window.scroll(0, this.SCROLLS[to_screen_global] || 0);
 
       // define new active screen
-      this.ACTIVE_SCREEN = to_screen;
+      this.ACTIVE_SCREEN = to_screen_global;
     }
   }
 

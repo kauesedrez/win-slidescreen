@@ -1,6 +1,6 @@
 {
   "name": "win-slidescreen",
-  "version": "2.0.1",
+  "version": "3.0.0",
   "description": "Plugin WinnetouJs",
   "main": "src/slideScreen.js",
   "scripts": {

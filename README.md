@@ -106,3 +106,14 @@ function menu() {
   SlideScreen.scroll(menuPage.ids.screen);
 }
 ```
+
+# New in version 3
+
+Use ids.content to insert data into screen constructo to correct hide scroll in desktop navigation when use "direct" parameter.
+
+```javascript
+content({ text: "Main Page" }).create(mainPage.ids.content);
+
+// but scroll still need the screen id, like version 2:
+SlideScreen.scroll(mainPage.ids.screen, "direct");
+```
