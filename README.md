@@ -120,4 +120,4 @@ SlideScreen.scroll(mainPage.ids.screen, "direct");
 
 # Scroll Restoration
 
-If you use an scroll restoration own algorithm, add `history.scrollRestoration = "manual"` somewhere inyour code to prevent browser to automatic scroll page.
+If you use an scroll restoration own algorithm, add `history.scrollRestoration = "manual"` somewhere in your code to prevent browser to automatic scroll page.
